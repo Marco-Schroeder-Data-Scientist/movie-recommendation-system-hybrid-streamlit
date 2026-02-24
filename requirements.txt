@@ -1,0 +1,9 @@
+pandas>=2.0
+numpy>=1.26
+matplotlib>=3.8
+seaborn>=0.13
+scikit-learn>=1.4
+implicit>=0.7
+streamlit>=1.30
+ast>=0.0.0  # para literal_eval
+pickle5>=0.0.11  #
