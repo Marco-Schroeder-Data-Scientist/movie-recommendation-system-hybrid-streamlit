@@ -1,31 +1,87 @@
-Resumen Ejecutivo –  Sistema de Recomendación Híbrido de Películas, Series y Anime
-Contexto
-El objetivo fue desarrollar un recomendador híbrido que combine filtrado colaborativo (usuario-ítem), basado en contenido (metadata de películas) y popularidad ponderada, utilizando datos reales de The Movies Dataset (TMDB + MovieLens).
-Metodología
+RESUMEN EJECUTIVO
+Sistema de Recomendacion Hibrido de Peliculas
+=============================================
 
-ETL: Limpieza de ~45k películas (nulos, tipos, duplicados, parseo JSON). Filtro conservador: solo estrenadas, duración razonable, ≥5 votos.
-EDA: Análisis univariado/bivariado (distribuciones, outliers, correlaciones Spearman, tendencias temporales).
-Feature engineering: Texto combinado (overview + géneros ×3 + tagline + título + director + top 3 actores) para TF-IDF. Score de popularidad ponderado (fórmula IMDb-like).
+DESCRIPCION
+-----------
+Proyecto end-to-end de recomendacion de peliculas que cubre todo el flujo de
+trabajo en ciencia de datos: ETL sobre datos reales complejos, EDA completo,
+feature engineering, modelado con multiples enfoques (popularidad, content-based,
+collaborative filtering y hibrido) y despliegue de una aplicacion interactiva
+en Streamlit.
+
+Dataset utilizado: The Movies Dataset (TMDB + MovieLens, Kaggle)
+Dataset original: ~45k peliculas
+
+
+METODOLOGIA
+-----------
+ETL y Limpieza:
+  - Tratamiento de nulos (imputacion por mediana/moda/placeholders)
+  - Conversion de tipos (fechas, categoricas, enteros nullable)
+  - Parseo de columnas JSON-like (genres → lista de nombres)
+  - Eliminacion de duplicados por id y por titulo+año
+  - Filtro conservador: solo Released, runtime 10-400 min, >= 5 votos
+
+EDA:
+  - Analisis univariado: distribuciones y deteccion de outliers
+  - Analisis bivariado: correlaciones Spearman, boxplots por genero
+  - Tendencias temporales de produccion y popularidad
+
+Feature Engineering:
+  - Score de popularidad ponderado (formula IMDb-like)
+  - Texto combinado para TF-IDF:
+    overview + generos x3 + tagline + titulo + director + top 3 actores
+
 Modelado:
-Popularidad ponderada (baseline).
-Content-based + híbrido (similitud coseno × score).
-Collaborative filtering con implicit BPR (Bayesian Personalized Ranking, factors=100, iterations=30).
+  Modelo                    Descripcion
+  ------------------------  -----------------------------------------------
+  Popularidad ponderada     Baseline — formula IMDb-like
+  Content-based             TF-IDF + similitud coseno
+  Hibrido content           Similitud coseno x score ponderado
+  Collaborative (BPR)       implicit BPR — factors=100, iterations=30
 
-Despliegue: App interactiva en Streamlit con 4 modos (popularidad, por título, por usuario, híbrido).
+  Feedback implicito en BPR: rating >= 3.5 → confianza 1.0
 
-Resultados clave
+Despliegue:
+  - Aplicacion interactiva en Streamlit con 4 modos de recomendacion
+  - Deploy publico en Streamlit Cloud (disponible en vivo)
 
-Dataset procesado: ~29.8k películas (post-filtros).
-Cobertura cruce ratings: ~63% (suficiente para CF).
-Recomendaciones collaborative (BPR) para usuarios reales: alta coherencia (ej: userId=1 recibió Pulp Fiction, Shawshank Redemption, Star Wars, Back to the Future – alineado con su historial de clásicos 80s-90s).
-Mejora significativa al enriquecer content-based con director/actores (reducción de ruido en recomendaciones).
-App funcional: interfaz limpia, interactiva, reproducible.
 
-Valor y habilidades demostradas
-Este proyecto muestra capacidad para:
+RESULTADOS
+----------
+- Dataset final filtrado:      ~29.8k peliculas (post-limpieza y filtros)
+- Subconjunto content-based:   ~9.1k peliculas con >= 50 votos
+- Cobertura cruce ratings:     ~63% (suficiente para collaborative filtering)
 
-Procesar y limpiar datasets reales complejos (JSON, nulos, duplicados).
-Realizar EDA completo y actionable.
-Implementar recomendadores híbridos (content + collaborative).
-Usar algoritmos avanzados de ranking (BPR) en feedback implícito.
-Desplegar soluciones interactivas (Streamlit).
+Validacion colaborativa — ejemplo userId=1:
+  Recomendaciones recibidas: Pulp Fiction, Shawshank Redemption, Forrest Gump,
+  Star Wars, Back to the Future.
+  Alta coherencia con historial del usuario (clasicos 80s-90s, aventura/sci-fi,
+  crimen/thriller) — validacion cualitativa positiva.
+
+Mejora observada al enriquecer content-based con director y actores:
+  Reduccion de ruido en recomendaciones respecto a TF-IDF solo sobre overview.
+
+
+HABILIDADES DEMOSTRADAS
+-----------------------
+- Procesamiento y limpieza de datasets reales complejos (JSON, nulos, duplicados)
+- EDA completo y accionable
+- Implementacion de recomendadores hibridos (content + collaborative)
+- Uso de algoritmos de ranking implicito (BPR) en feedback no explicito
+- Despliegue de soluciones interactivas con Streamlit
+
+
+PROXIMOS PASOS
+--------------
+- Incorporar keywords.csv para enriquecer content-based
+- Agregar evaluacion offline formal (NDCG@10, Precision@K)
+- Fine-tuning de hiperparametros en BPR
+- Visualizacion de posters en la app Streamlit
+
+
+TECNOLOGIAS UTILIZADAS
+----------------------
+Python 3.13 · pandas · numpy · scikit-learn · implicit (BPR) ·
+matplotlib · seaborn · Streamlit · Jupyter Notebook
